@@ -1,7 +1,5 @@
 pragma solidity ^0.4.11;
 
-import 'zeppelin-solidity/contracts/token/ERC20Basic.sol';
-import 'zeppelin-solidity/contracts/ownership/Ownable.sol';
 import 'zeppelin-solidity/contracts/token/StandardToken.sol';
 
 
@@ -10,7 +8,7 @@ import 'zeppelin-solidity/contracts/token/StandardToken.sol';
  *
  * @dev Based on code by BAT: https://github.com/brave-intl/basic-attention-token-crowdsale/blob/master/contracts/BAToken.sol
  */
-contract TIXGeneration is Ownable, StandardToken {
+contract TIXGeneration is StandardToken {
     string public constant name = "Blocktix Token";
     string public constant symbol = "TIX";
     uint256 public constant decimals = 18;
