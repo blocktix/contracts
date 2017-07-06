@@ -1,5 +1,6 @@
 pragma solidity ^0.4.11;
 
+
 import 'zeppelin-solidity/contracts/token/StandardToken.sol';
 
 
@@ -163,7 +164,6 @@ contract TIXGeneration is StandardToken {
         balances[msg.sender] += tokens;
         CreateTIX(msg.sender, tokens); // logs token creation
     }
-
 
     /**
     * @dev Ends the funding period and sends the ETH home
