@@ -20,11 +20,15 @@ contract TIXGeneration is StandardToken {
     uint256 public startTime = 0;         // crowdsale start time (in seconds)
     uint256 public endTime = 0;           // crowdsale end time (in seconds)
     uint256 public constant tokenGenerationCap =  62.5 * (10**6) * 10**decimals; // 62.5m TIX
-    uint256 public constant tokenExchangeRate = 1127;
+    uint256 public constant t2tokenExchangeRate = 1250;
+    uint256 public constant t3tokenExchangeRate = 1041;
     uint256 public constant tixFund = tokenGenerationCap / 100 * 24;     // 24%
     uint256 public constant tixFounders = tokenGenerationCap / 100 * 10; // 10%
     uint256 public constant tixPromo = tokenGenerationCap / 100 * 2;     // 2%
-    uint256 public constant tixPresale = 30 * (10**6) * 10**decimals;    // 30m TIX Presale
+    uint256 public constant tixPresale = 29.16 * (10**6) * 10**decimals;    // 29.16m TIX Presale
+
+    uint256 public constant finalTier = 52.5 * (10**6) * 10**decimals; // last 10m
+    uint256 public tokenExchangeRate = t2tokenExchangeRate;
 
     // addresses
     address public ethFundDeposit;      // deposit address for ETH for Blocktix
@@ -149,15 +153,27 @@ contract TIXGeneration is StandardToken {
 
         uint256 tokens = SafeMath.mul(msg.value, tokenExchangeRate); // check that we're not over totals
         uint256 checkedSupply = SafeMath.add(totalSupply, tokens);
+        uint256 diff;
+
+        // switch to next tier
+        if (tokenExchangeRate != t3tokenExchangeRate && finalTier < checkedSupply)
+        {
+            diff = SafeMath.sub(checkedSupply, finalTier);
+            tokens = SafeMath.sub(tokens, diff);
+            uint256 ethdiff = SafeMath.div(diff, t2tokenExchangeRate);
+            tokenExchangeRate = t3tokenExchangeRate;
+            tokens = SafeMath.add(tokens, SafeMath.mul(ethdiff, tokenExchangeRate));
+            checkedSupply = SafeMath.add(totalSupply, tokens);
+        }
 
         // return money if something goes wrong
         if (tokenGenerationCap < checkedSupply)
         {
-            uint256 diff = SafeMath.sub(checkedSupply, tokenGenerationCap);
+            diff = SafeMath.sub(checkedSupply, tokenGenerationCap);
             if (diff > 10**12)
                 throw;
-            checkedSupply -= diff;
-            tokens -= diff;
+            checkedSupply = SafeMath.sub(checkedSupply, diff);
+            tokens = SafeMath.sub(tokens, diff);
         }
 
         totalSupply = checkedSupply;
